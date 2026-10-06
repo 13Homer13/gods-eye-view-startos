@@ -1,7 +1,7 @@
 import { FileHelper, z } from '@start9labs/start-sdk'
 import { sdk } from '../sdk'
 
-const shape = z.object({
+const shape = z.looseObject({
   // Cleartext: the OS reverse proxy needs it to configure HTTP Basic auth.
   uiPassword: z.string().catch(''),
 })
