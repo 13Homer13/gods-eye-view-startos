@@ -12,6 +12,6 @@ export const uiUsername = 'admin'
 export const mainHostId = 'main'
 export const uiInterfaceId = 'ui'
 
-// `merge` writes an undefined field as `KEY=undefined`, which upstream's
+// The env serializer writes `null` as the literal `KEY=null`, which upstream's
 // truthiness guards read as set.
 export const envValue = (v: string | null | undefined) => (v ?? '').trim()

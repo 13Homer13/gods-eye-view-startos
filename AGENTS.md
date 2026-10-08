@@ -18,7 +18,10 @@ Freshly scaffolded? Work the
 guide page, not a file in this repo — read it, don't copy it in.
 
 Keep `README.md` (technical reference for an AI support or administering agent) and
-`instructions.md` (end-user docs) in sync with your changes.
+`instructions.md` (end-user docs) in sync with your changes. This file restates neither:
+whoever changes the package has both, so it carries only what they don't — repo mechanics,
+a change that looks right and is not, where the next thing gets added, a naming trap, a
+build or test invocation particular to this repo.
 
 **Fix a defect you spot rather than reporting it** — you have the package open and the
 context to be sure. File **a GitHub issue on this repo** only when the call isn't yours to
@@ -32,8 +35,6 @@ verified, tried, and decided belongs in the commit message and the PR body.
 ## This repo
 
 - **The application is the `gods-eye-view/` submodule and is never edited here.** Fixes go to <https://github.com/bilawalsidhu/gods-eye-view>; this repo moves the pin. A fix upstream hasn't taken goes in a `patches/` directory applied by the `Dockerfile`, never by copying source in.
-- **`GOOGLE_MAPS_API_KEY` and `CESIUM_ION_TOKEN` are build-time values.** Upstream's `build/vite.js` injects them into the browser bundle through Vite's `define`, which is why `main.ts` runs `vite build` as a oneshot before the daemon. Don't replace the rebuild with a plain restart.
-- **The daemon depends on `HOST=0.0.0.0`.** `build/vite.js` sets `allowedHosts: true` only for that value; anything else makes Vite reject every non-`localhost` `Host` header, which is every address StartOS serves.
-- **A provider must register `configurePreviewServer`, not just `configureServer`.** The package serves with `vite preview`; a provider registered for the dev server alone works upstream and 404s here. Check `server/providers/` at every bump.
-- **`scripts/` is a runtime dependency, not tooling.** `server/` imports `scripts/pinokio-environment.mjs` and `scripts/google-server-key.mjs`, so `.dockerignore` must not prune it.
-- **The OS reverse-proxy gate is the only authentication.** Upstream ships none, and the same origin serves `/api/openai/*`, `/api/google/*` and `/api/tomtom`, which spend the user's own API credit. Don't make the gate optional.
+- **Check `server/providers/` at every bump for a provider that registers only `configureServer`.** The package serves with `vite preview`, so such a provider works upstream and 404s here.
+- **Don't let `.dockerignore` prune `gods-eye-view/scripts/`.** `server/` imports `scripts/pinokio-environment.mjs` and `scripts/google-server-key.mjs` at runtime.
+- **Don't make the reverse-proxy gate optional.** It is the only authentication in front of the `/api/*` proxies that spend the user's API credit.
