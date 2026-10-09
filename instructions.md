@@ -21,13 +21,14 @@ Everything below is optional, and each item is its own action. Saving any of the
 
 - **Map Tile Keys** — a free Cesium ion token adds photorealistic 3D buildings, world terrain and Bing aerial imagery. A Google Maps key adds Google's 3D tiles directly plus place search; it is metered, so set a billing cap at Google.
 - **Data Feed Keys** — free keys for wildfires (NASA FIRMS), ship tracking (AISStream) and live traffic (TomTom), and OpenSky or Launch Library credentials for higher rate limits.
-- **Voice & Spend Controls** — an OpenAI key for talking to the globe, plus per-visitor throttles on the metered services.
+- **Voice & Spend Controls** — an OpenAI key for talking to the globe, plus per-visitor throttles on the metered services. Since God's Eye View 0.2.1 those throttles are on by default (OpenAI 30 requests per minute per client, Google 120) — the action only needs changing if you want different caps.
 
 ## Using God's Eye View
 
 ### Web interface
 
-Data layers are in the panel on the left, visual presets on the right. Click any aircraft, vessel, satellite or camera to track it. The globe is drawn by your browser, not by your server, so a phone will struggle where a laptop won't.
+- Data layers are in the panel on the left, visual presets on the right. Click any aircraft, vessel, satellite or camera to track it. The globe is drawn by your browser, not by your server, so a phone will struggle where a laptop won't.
+- God's Eye View 0.2.x also speaks MCP, so an AI agent pointed at `https://<the web UI address>/mcp` can query the globe through the same username and password. It's an upstream feature in early shape — expect it to change between versions.
 
 ### Actions
 
