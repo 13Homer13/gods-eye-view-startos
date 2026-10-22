@@ -1,18 +1,13 @@
 import { IMPOSSIBLE, VersionInfo } from '@start9labs/start-sdk'
 
 export const current = VersionInfo.of({
-  version: '0.2.1:1',
+  version: '0.2.1:2',
   releaseNotes: {
-    en_US:
-      "Restarting God's Eye View while it is still starting stops every process of the previous run.",
-    es_ES:
-      "Reiniciar God's Eye View mientras aún se está iniciando detiene todos los procesos de la ejecución anterior.",
-    de_DE:
-      "Ein Neustart von God's Eye View, während es noch startet, beendet alle Prozesse des vorherigen Laufs.",
-    pl_PL:
-      "Ponowne uruchomienie God's Eye View w trakcie uruchamiania zatrzymuje wszystkie procesy poprzedniego uruchomienia.",
-    fr_FR:
-      "Redémarrer God's Eye View pendant son démarrage arrête tous les processus de l'exécution précédente.",
+    en_US: 'Updates Node.js to 24.22.1 with security fixes.',
+    es_ES: 'Actualiza Node.js a 24.22.1 con correcciones de seguridad.',
+    de_DE: 'Aktualisiert Node.js auf 24.22.1 mit Sicherheitskorrekturen.',
+    pl_PL: 'Aktualizuje Node.js do wersji 24.22.1 z poprawkami bezpieczeństwa.',
+    fr_FR: 'Met à jour Node.js vers 24.22.1 avec des correctifs de sécurité.',
   },
   migrations: {
     up: async ({ effects }) => {},
