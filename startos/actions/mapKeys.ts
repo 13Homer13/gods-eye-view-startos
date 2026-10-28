@@ -52,6 +52,16 @@ export const mapKeys = sdk.Action.withInput(
       default: null,
       placeholder: 'AIza...',
     }),
+    MAPILLARY_CLIENT_TOKEN: Value.text({
+      name: i18n('Mapillary Client Token'),
+      description: i18n(
+        'Free from mapillary.com (Dashboard › Developers). Adds Mapillary photos to the Street Level layer, which works without a key through Panoramax and KartaView. This token is compiled into the page and readable by anyone who can sign in.',
+      ),
+      required: false,
+      masked: true,
+      default: null,
+      placeholder: 'MLY|...',
+    }),
   }),
 
   async () => {
@@ -60,6 +70,7 @@ export const mapKeys = sdk.Action.withInput(
       CESIUM_ION_TOKEN: env?.CESIUM_ION_TOKEN,
       GOOGLE_MAPS_API_KEY: env?.GOOGLE_MAPS_API_KEY,
       GOOGLE_MAPS_SERVER_API_KEY: env?.GOOGLE_MAPS_SERVER_API_KEY,
+      MAPILLARY_CLIENT_TOKEN: env?.MAPILLARY_CLIENT_TOKEN,
     }
   },
 
@@ -68,5 +79,6 @@ export const mapKeys = sdk.Action.withInput(
       CESIUM_ION_TOKEN: envValue(input.CESIUM_ION_TOKEN),
       GOOGLE_MAPS_API_KEY: envValue(input.GOOGLE_MAPS_API_KEY),
       GOOGLE_MAPS_SERVER_API_KEY: envValue(input.GOOGLE_MAPS_SERVER_API_KEY),
+      MAPILLARY_CLIENT_TOKEN: envValue(input.MAPILLARY_CLIENT_TOKEN),
     }),
 )

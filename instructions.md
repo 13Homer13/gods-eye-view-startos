@@ -19,9 +19,9 @@ Your server fetches from OpenSky, CelesTrak, USGS and about a dozen other provid
 
 Everything below is optional, and each item is its own action. Saving any of them restarts the service and rebuilds the page; allow about a minute.
 
-- **Map Tile Keys** — a free Cesium ion token adds photorealistic 3D buildings, world terrain and Bing aerial imagery. A Google Maps key adds Google's 3D tiles directly plus place search; it is metered, so set a billing cap at Google.
+- **Map Tile Keys** — a free Cesium ion token adds photorealistic 3D buildings, world terrain and Bing aerial imagery. A Google Maps key adds Google's 3D tiles directly, place search and Google Street View; it is metered, so set a billing cap at Google. A free Mapillary token adds Mapillary photos to the Street Level layer, which already works without a key through Panoramax and KartaView.
 - **Data Feed Keys** — free keys for wildfires (NASA FIRMS), ship tracking (AISStream) and live traffic (TomTom), and OpenSky or Launch Library credentials for higher rate limits.
-- **Voice & Spend Controls** — an OpenAI key for talking to the globe, plus request throttles on the metered services. Leave the limits empty for the defaults (OpenAI 30 requests per minute, Google 120), or enter 0 to disable a throttle. These allowances are shared by visitors, not separate caps for each person.
+- **Voice & Spend Controls** — an OpenAI key for talking to the globe, a Gemini key if you prefer Gemini Live voice (choose it in the app's voice panel), plus request throttles on the metered services. Leave the limits empty for the defaults (OpenAI and Gemini 30 requests per minute, Google 120), or enter 0 to disable a throttle. These allowances are shared by visitors, not separate caps for each person.
 
 ## Using God's Eye View
 
@@ -38,4 +38,4 @@ Data layers are in the panel on the left, visual presets on the right. Click any
 
 - The in-app "POWER UP" key panel is not available here; it only works when the app is run from its own development server. Use the actions instead.
 - MCP agent access and its companion panel are not available through this package's Web UI.
-- Anyone with your web UI password can run up charges on your Google and OpenAI keys, and the Google Maps key is readable by anyone who can open the page. Treat the password as a real credential, restrict the Google key by referrer, and set spending limits with the providers rather than relying only on the in-app throttles.
+- Anyone with your web UI password can run up charges on your Google, OpenAI and Gemini keys, and the Google Maps key and Mapillary token are readable by anyone who can open the page. Treat the password as a real credential, restrict the Google key by referrer, and set spending limits with the providers rather than relying only on the in-app throttles.
