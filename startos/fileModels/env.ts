@@ -12,9 +12,11 @@ const shape = z
     // lands on the next `vite build`.
     GOOGLE_MAPS_API_KEY: z.string().optional().catch(undefined),
     CESIUM_ION_TOKEN: z.string().optional().catch(undefined),
+    MAPILLARY_CLIENT_TOKEN: z.string().optional().catch(undefined),
 
     GOOGLE_MAPS_SERVER_API_KEY: z.string().optional().catch(undefined),
     OPENAI_API_KEY: z.string().optional().catch(undefined),
+    GEMINI_API_KEY: z.string().optional().catch(undefined),
     FIRMS_MAP_KEY: z.string().optional().catch(undefined),
     AISSTREAM_API_KEY: z.string().optional().catch(undefined),
     TOMTOM_API_KEY: z.string().optional().catch(undefined),
@@ -30,6 +32,7 @@ const shape = z
 
     GEV_RATELIMIT_GOOGLE_PER_MIN: z.string().optional().catch(undefined),
     GEV_RATELIMIT_OPENAI_PER_MIN: z.string().optional().catch(undefined),
+    GEV_RATELIMIT_GEMINI_PER_MIN: z.string().optional().catch(undefined),
     TOMTOM_DAILY_TILE_BUDGET: z.string().optional().catch(undefined),
   })
   .catchall(z.string())

@@ -15,7 +15,7 @@ export const spendControls = sdk.Action.withInput(
   async () => ({
     name: i18n('Voice & Spend Controls'),
     description: i18n(
-      'The OpenAI key for voice control, and request throttles shared by visitors behind the StartOS proxy.',
+      'The OpenAI and Gemini keys for voice control, and request throttles shared by visitors behind the StartOS proxy.',
     ),
     warning: i18n(
       'Saving restarts the service. These throttles are not billing caps: anyone who can sign in can drive spend through these endpoints, so also set quotas and billing alerts with the providers themselves.',
@@ -38,6 +38,27 @@ export const spendControls = sdk.Action.withInput(
     }),
     GEV_RATELIMIT_OPENAI_PER_MIN: Value.text({
       name: i18n('OpenAI Requests per Minute'),
+      description: i18n(
+        'Leave empty for 30 requests per minute. Set 0 to disable the throttle.',
+      ),
+      required: false,
+      masked: false,
+      default: null,
+      placeholder: '10',
+      patterns: wholeNumber,
+    }),
+    GEMINI_API_KEY: Value.text({
+      name: i18n('Gemini API Key'),
+      description: i18n(
+        "Enables Gemini Live as an alternative voice provider, chosen in the app's voice panel. Metered. Audio from the browser is sent to Google.",
+      ),
+      required: false,
+      masked: true,
+      default: null,
+      placeholder: 'AIza...',
+    }),
+    GEV_RATELIMIT_GEMINI_PER_MIN: Value.text({
+      name: i18n('Gemini Requests per Minute'),
       description: i18n(
         'Leave empty for 30 requests per minute. Set 0 to disable the throttle.',
       ),
@@ -76,6 +97,8 @@ export const spendControls = sdk.Action.withInput(
     return {
       OPENAI_API_KEY: env?.OPENAI_API_KEY,
       GEV_RATELIMIT_OPENAI_PER_MIN: env?.GEV_RATELIMIT_OPENAI_PER_MIN,
+      GEMINI_API_KEY: env?.GEMINI_API_KEY,
+      GEV_RATELIMIT_GEMINI_PER_MIN: env?.GEV_RATELIMIT_GEMINI_PER_MIN,
       GEV_RATELIMIT_GOOGLE_PER_MIN: env?.GEV_RATELIMIT_GOOGLE_PER_MIN,
       TOMTOM_DAILY_TILE_BUDGET: env?.TOMTOM_DAILY_TILE_BUDGET,
     }
@@ -86,6 +109,10 @@ export const spendControls = sdk.Action.withInput(
       OPENAI_API_KEY: envValue(input.OPENAI_API_KEY),
       GEV_RATELIMIT_OPENAI_PER_MIN: envValue(
         input.GEV_RATELIMIT_OPENAI_PER_MIN,
+      ),
+      GEMINI_API_KEY: envValue(input.GEMINI_API_KEY),
+      GEV_RATELIMIT_GEMINI_PER_MIN: envValue(
+        input.GEV_RATELIMIT_GEMINI_PER_MIN,
       ),
       GEV_RATELIMIT_GOOGLE_PER_MIN: envValue(
         input.GEV_RATELIMIT_GOOGLE_PER_MIN,

@@ -55,7 +55,7 @@ const dict = {
   // actions/spendControls.ts
   'Must be a whole number': 39,
   'Voice & Spend Controls': 40,
-  'The OpenAI key for voice control, and request throttles shared by visitors behind the StartOS proxy.': 41,
+  'The OpenAI and Gemini keys for voice control, and request throttles shared by visitors behind the StartOS proxy.': 41,
   'Saving restarts the service. These throttles are not billing caps: anyone who can sign in can drive spend through these endpoints, so also set quotas and billing alerts with the providers themselves.': 42,
   'OpenAI API Key': 43,
   'Enables voice control through the OpenAI Realtime API. Metered — a few cents per minute of conversation. Audio from the browser is sent to OpenAI.': 44,
@@ -65,6 +65,15 @@ const dict = {
   'TomTom Daily Tile Budget': 48,
   "Soft cap on traffic-tile requests per day. Leave empty for upstream's default of 40000.": 49,
   'Leave empty for 120 requests per minute. Set 0 to disable the throttle.': 50,
+
+  // actions/mapKeys.ts
+  'Mapillary Client Token': 51,
+  'Free from mapillary.com (Dashboard › Developers). Adds Mapillary photos to the Street Level layer, which works without a key through Panoramax and KartaView. This token is compiled into the page and readable by anyone who can sign in.': 52,
+
+  // actions/spendControls.ts
+  'Gemini API Key': 53,
+  "Enables Gemini Live as an alternative voice provider, chosen in the app's voice panel. Metered. Audio from the browser is sent to Google.": 54,
+  'Gemini Requests per Minute': 55,
 } as const
 
 /**

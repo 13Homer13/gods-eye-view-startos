@@ -65,7 +65,7 @@ Two, both on the `main` volume and both created empty at init.
 
 `envFile` names only the keys the actions manage, and the actions are its only writers; a value set by hand on the volume for one of upstream's other tunables (the `CCTV_*` source-pack options, `OVERPASS_UPSTREAMS`, `AISSTREAM_BOUNDING_BOXES`, the `OPENAI_REALTIME_*` model overrides) survives every write. A cleared field is written as an empty string rather than removed, which upstream reads as unset. `GEV_ALLOWED_HOSTS` and `GEV_TRUSTED_PROXY` are not here — they are daemon env, and `.env` cannot override a `process.env` value the daemon already set.
 
-Upstream loads `.env` when Vite evaluates its config, so every key is a launch-time value; the service restarts whenever the file changes. Two of them — `GOOGLE_MAPS_API_KEY` and `CESIUM_ION_TOKEN` — are compiled into the browser bundle rather than read at runtime, which is why the restart rebuilds the client (see [Installation and First-Run Flow](#installation-and-first-run-flow)).
+Upstream loads `.env` when Vite evaluates its config, so every key is a launch-time value; the service restarts whenever the file changes. Three of them — `GOOGLE_MAPS_API_KEY`, `CESIUM_ION_TOKEN` and `MAPILLARY_CLIENT_TOKEN` — are compiled into the browser bundle rather than read at runtime, which is why the restart rebuilds the client (see [Installation and First-Run Flow](#installation-and-first-run-flow)).
 
 ## Dependencies
 
@@ -81,7 +81,7 @@ One HTTP interface, gated at the OS reverse proxy, and heavy outbound traffic to
 
 The binding sets `addSsl.auth` to HTTP Basic (username `admin`), so the OS proxy challenges every request before it reaches the container. Upstream ships no login of its own, and the same origin serves `/api/openai/*`, `/api/google/*` and `/api/tomtom`, which spend the user's own metered API credit — the gate covers those along with the page. The daemon runs with `HOST=0.0.0.0` to bind every interface. A wildcard bind does not trust every `Host` header: `build/allowedHosts.js` answers IP addresses always, and non-IP names only if listed in `GEV_ALLOWED_HOSTS` (wildcards are refused by design). `main.ts` reads the interface's own hostnames reactively and passes them in — exactly the names StartOS's listener can forward, since that listener refuses hostnames the user has not enabled at TLS time before the request reaches the container. The same OS proxy adds `X-Forwarded-Proto`/`X-Forwarded-For` (its `http` bindings forward with them; client-supplied copies are stripped) and terminates TLS at the OS, so upstream's same-site gate on the cost-bearing endpoints would refuse every browser POST as "proxied"; `patches/` makes that gate trust those two headers when the daemon sets `GEV_TRUSTED_PROXY=1`, which `main.ts` does. The gate's remaining checks — `Sec-Fetch-Site`, foreign and opaque `Origin`s, every other proxy signal — are untouched.
 
-**Outbound**: the server is a client for roughly a dozen third-party APIs — OpenSky, adsb.lol, CelesTrak, USGS, Launch Library, Overpass, Radio Browser, GBFS, municipal camera feeds, and with keys NASA FIRMS, AISStream, TomTom, Google and OpenAI. Those requests leave from the server's own connection, and the browser fetches map tiles and fonts from Esri, Google and Cesium directly.
+**Outbound**: the server is a client for roughly a dozen third-party APIs — OpenSky, adsb.lol, CelesTrak, USGS, Launch Library, Overpass, Radio Browser, GBFS, municipal camera feeds, Panoramax and KartaView street-level imagery, and with keys NASA FIRMS, AISStream, TomTom, Google, OpenAI and Gemini. Those requests leave from the server's own connection, and the browser fetches map tiles, fonts and street-level photos from Esri, Google, Cesium, Mapillary, Panoramax and KartaView directly.
 
 ## Installation and First-Run Flow
 
@@ -96,11 +96,11 @@ Four, all user-facing.
 | Action           | When to run it                                                                  | Cost / repeat safety                                                            | State changed |
 | ---------------- | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- | ------------- |
 | `set-password`   | First setup (raised as a task), a lost password, or rotation                    | Instant, no restart; each run invalidates the previous password; safe to repeat | `store.json`  |
-| `map-keys`       | Photorealistic 3D or Google place search wanted                                 | Restarts the service and rebuilds the client (~1 min); safe to repeat           | `.env`        |
+| `map-keys`       | Photorealistic 3D, Google place search or Street View, or Mapillary wanted      | Restarts the service and rebuilds the client (~1 min); safe to repeat           | `.env`        |
 | `data-feed-keys` | A keyed layer (fires, vessels, traffic) is missing, or OpenSky rate limits bite | Restarts the service; safe to repeat                                            | `.env`        |
 | `spend-controls` | Voice control wanted, or metered spend needs throttling                         | Restarts the service; safe to repeat                                            | `.env`        |
 
-The OpenAI and Google throttles key on the container socket's peer address, not `X-Forwarded-For`. Visitors behind the StartOS proxy therefore share a request allowance; they do not get independent per-visitor caps.
+The OpenAI, Gemini and Google throttles key on the container socket's peer address, not `X-Forwarded-For`. Visitors behind the StartOS proxy therefore share a request allowance; they do not get independent per-visitor caps.
 
 `set-password` returns the username and password once; `setInterfaces` reads `uiPassword` with `.const()`, so the proxy picks up the new credential on write. A user who still gets in with the old password is seeing their browser's cached Basic credentials, not a failed reset. `data-feed-keys` also derives `OPENSKY_AUTH_MODE`: `oauth` when both the OpenSky client id and secret are present, `anon` otherwise — upstream defaults it to `oauth`, which fails without a full credential.
 
@@ -131,7 +131,7 @@ One, the `ready` check on the `ui` daemon.
 1. **Upstream's in-app key panel ("POWER UP") is absent.** Upstream registers its `/api/setup/*` endpoints only under `vite dev` and only for loopback clients; under `vite preview` the page's status probe 404s and the panel removes itself. Keys come from this package's actions instead.
 2. **The browser-side Google key is readable by anyone who can sign in.** Upstream compiles it into the page by design. Restrict it by HTTP referrer at Google and set a billing cap; StartOS serves the same page on several addresses, so scope the referrer rule accordingly.
 3. **This is a dev-grade server.** Upstream describes itself as "a fast, hackable foundation, not a hardened production service", and `vite preview` is Vite's preview server. The OS gate is what stands in front of it.
-4. **Not a private service.** Every tile request tells the imagery provider where the user is looking, provider requests leave from the server's own connection, and voice control streams microphone audio to OpenAI.
+4. **Not a private service.** Every tile request tells the imagery provider where the user is looking, provider requests leave from the server's own connection, and voice control streams microphone audio to OpenAI or Google (Gemini Live).
 5. **Bundled data carries non-MIT terms.** Upstream's code is MIT, but its bundled datasets are not: the TeleGeography submarine-cable map is CC BY-NC-SA 3.0, the datacenter and dam sets are ODbL 1.0, and `public/models/` is excluded from the MIT grant. See upstream's `LICENSE` and `DATA_SOURCES.md`.
 6. **MCP is not exposed through the Web UI.** Upstream's `/mcp` handler requires a loopback socket peer and a loopback `Host` naming the container port; StartOS proxy requests fail those checks even after authentication. The companion `/panel/` view also needs a second bundle (`npm run build:panel`) that the package does not build.
 7. **Upstream moves fast and tags rarely.** The submodule pins a commit, not a release; see `UPDATING.md`.
@@ -157,8 +157,10 @@ startos_managed_env_vars:
   - GEV_TRUSTED_PROXY
   - GOOGLE_MAPS_API_KEY
   - CESIUM_ION_TOKEN
+  - MAPILLARY_CLIENT_TOKEN
   - GOOGLE_MAPS_SERVER_API_KEY
   - OPENAI_API_KEY
+  - GEMINI_API_KEY
   - FIRMS_MAP_KEY
   - AISSTREAM_API_KEY
   - TOMTOM_API_KEY
@@ -168,6 +170,7 @@ startos_managed_env_vars:
   - OPENSKY_CLIENT_SECRET
   - GEV_RATELIMIT_GOOGLE_PER_MIN
   - GEV_RATELIMIT_OPENAI_PER_MIN
+  - GEV_RATELIMIT_GEMINI_PER_MIN
   - TOMTOM_DAILY_TILE_BUDGET
 dependencies: none
 interfaces:
